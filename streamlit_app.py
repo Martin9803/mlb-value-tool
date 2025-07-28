@@ -108,15 +108,16 @@ if player_type:
 
             df_sorted = df.sort_values(by="Value", ascending=False).reset_index(drop=True)
             df_sorted.index += 1
-            df_display = df_sorted[["Name", "Team", "Salary (Per Season)", stat]]
 
+            df_display = df_sorted[["Name", "Team", "Salary (Per Season)", stat]].copy()
             df_display["Salary (Per Season) (Raw)"] = df_sorted["Salary (Per Season)"]
-            df_display["Salary (Per Season)"] = df_display["Salary (Per Season)"].apply(lambda x: f"${x:,.0f}")
+            df_display["Salary (Per Season) (Formatted)"] = df_display["Salary (Per Season) (Raw)"].apply(lambda x: f"${x:,.0f}")
 
             st.subheader(f"📋 Ranked Players by {stat}")
-            st.dataframe(df_display.sort_values(by="Salary (Per Season) (Raw)", ascending=False).drop(columns=["Salary (Per Season) (Raw)"]))
+            st.dataframe(df_display.sort_values(by="Salary (Per Season) (Raw)", ascending=False)[["Name", "Team", "Salary (Per Season) (Formatted)", stat]].rename(columns={"Salary (Per Season) (Formatted)": "Salary (Per Season)"}))
 else:
     st.info("Please select a player type to begin.")
+
 
 
 

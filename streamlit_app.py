@@ -64,6 +64,7 @@ if player_type:
     mode = st.radio("Would you like to look up a specific player or rank all players?", ["", "Player Lookup", "Rank All Players"])
 
     if mode == "Player Lookup":
+        df = df[~df["Team"].str.contains("Tms", na=False)]
         teams = [""] + sorted(df["Team"].unique())
         team_selected = st.selectbox("Select Team:", teams)
 

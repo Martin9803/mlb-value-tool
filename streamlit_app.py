@@ -50,6 +50,17 @@ if player_type:
     else:
         df = df[df["IP"] >= 10]
 
+    st.markdown("""
+        ### 🧮 How the Value Formula Works
+        We want to see how much **value** a player provides compared to how much they're paid. So we use this formula:
+
+        - We take the stat you care about (like Home Runs or WAR)
+        - We give a small bonus for playing time (more games or innings played)
+        - We divide that by how much money they make
+
+        **The higher the score, the more performance you're getting for every dollar spent!**
+    """)
+
     mode = st.radio("Would you like to look up a specific player or rank all players?", ["", "Player Lookup", "Rank All Players"])
 
     if mode == "Player Lookup":
@@ -98,6 +109,8 @@ if player_type:
             df_sorted = df.sort_values(by="Value", ascending=False).reset_index(drop=True)
             df_sorted.index += 1
             df_display = df_sorted[["Name", "Team", "Salary (Per Season)", stat]]
+
+            df_display["Salary (Per Season)"] = df_display["Salary (Per Season)"].apply(lambda x: f"${x:,.0f}")
 
             st.subheader(f"📋 Ranked Players by {stat}")
             st.dataframe(df_display)

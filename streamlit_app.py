@@ -31,7 +31,7 @@ pitching_stats = {
     "WAR": "Wins Above Replacement – An estimate of the pitcher’s total contribution to the team compared to a replacement-level pitcher"
 }
 
-player_type = st.selectbox("Choose player type:", ["", "Batters", "Pitchers"])
+player_type = st.selectbox("Choose player type:", ["Batters", "Pitchers"])
 
 if player_type:
     filename = "batters_2025_2025.csv" if player_type == "Batters" else "pitchers_2025_2025.csv"
@@ -61,19 +61,19 @@ if player_type:
         **The higher the score, the more performance you're getting for every dollar spent!**
     """)
 
-    mode = st.radio("Would you like to look up a specific player or rank all players?", ["", "Player Lookup", "Rank All Players"])
+    mode = st.radio("Would you like to look up a specific player or rank all players?", ["Player Lookup", "Rank All Players"])
 
     if mode == "Player Lookup":
         df = df[~df["Team"].str.contains("Tms", na=False)]
-        teams = [""] + sorted(df["Team"].unique())
+        teams = sorted(df["Team"].dropna().unique())
         team_selected = st.selectbox("Select Team:", teams)
 
         if team_selected:
-            players = [""] + sorted(df[df["Team"] == team_selected]["Name"].tolist())
+            players = sorted(df[df["Team"] == team_selected]["Name"].dropna().tolist())
             player_selected = st.selectbox("Select Player:", players)
 
             if player_selected:
-                stat = st.selectbox("Select Stat to Rank Player by:", [""] + sorted(list(stat_dict.keys())))
+                stat = st.selectbox("Select Stat to Rank Player by:", sorted(list(stat_dict.keys())))
 
                 if stat:
                     st.markdown(f"**{stat}**: {stat_dict[stat]}")
@@ -95,7 +95,7 @@ if player_type:
                         st.warning("This player does not meet the qualification threshold.")
 
     elif mode == "Rank All Players":
-        stat = st.selectbox("Choose a stat to rank players by:", [""] + sorted(list(stat_dict.keys())))
+        stat = st.selectbox("Choose a stat to rank players by:", sorted(list(stat_dict.keys())))
 
         if stat:
             with st.expander("📘 Stat Descriptions"):
@@ -118,6 +118,7 @@ if player_type:
             st.dataframe(df_display.sort_values(by="Salary (Per Season) (Raw)", ascending=False)[["Name", "Team", "Salary (Per Season) (Formatted)", stat]].rename(columns={"Salary (Per Season) (Formatted)": "Salary (Per Season)"}))
 else:
     st.info("Please select a player type to begin.")
+
 
 
 

@@ -110,12 +110,14 @@ if player_type:
             df_sorted.index += 1
             df_display = df_sorted[["Name", "Team", "Salary (Per Season)", stat]]
 
+            df_display["Salary (Per Season) (Raw)"] = df_sorted["Salary (Per Season)"]
             df_display["Salary (Per Season)"] = df_display["Salary (Per Season)"].apply(lambda x: f"${x:,.0f}")
 
             st.subheader(f"📋 Ranked Players by {stat}")
-            st.dataframe(df_display)
+            st.dataframe(df_display.sort_values(by="Salary (Per Season) (Raw)", ascending=False).drop(columns=["Salary (Per Season) (Raw)"]))
 else:
     st.info("Please select a player type to begin.")
+
 
 
 

@@ -90,7 +90,8 @@ if player_type:
                     if player_selected in df_sorted["Name"].values:
                         row = df_sorted[df_sorted["Name"] == player_selected].iloc[0]
                         rank = df_sorted[df_sorted["Name"] == player_selected].index[0]
-                        st.success(f"📊 {player_selected} is ranked #{rank} in {stat} with a season stat of {row[stat]}.")
+                        percentile = 100 * (1 - (rank - 1) / len(df_sorted))
+                        st.success(f"📊 {player_selected} is ranked #{rank} in {stat} with a season stat of {row[stat]}. That places them in the top {percentile:.1f}% of the league.")
                     else:
                         st.warning("This player does not meet the qualification threshold.")
 
@@ -118,6 +119,7 @@ if player_type:
             st.dataframe(df_display.sort_values(by="Salary (Per Season) (Raw)", ascending=False)[["Name", "Team", "Salary (Per Season) (Formatted)", stat]].rename(columns={"Salary (Per Season) (Formatted)": "Salary (Per Season)"}))
 else:
     st.info("Please select a player type to begin.")
+
 
 
 

@@ -31,6 +31,16 @@ pitching_stats = {
     "WAR": "Wins Above Replacement – An estimate of the pitcher’s total contribution to the team compared to a replacement-level pitcher"
 }
 
+team_logos = {
+    "ATL": "https://a.espncdn.com/i/teamlogos/mlb/500/atl.png",
+    "BOS": "https://a.espncdn.com/i/teamlogos/mlb/500/bos.png",
+    "NYY": "https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png",
+    "LAD": "https://a.espncdn.com/i/teamlogos/mlb/500/lad.png",
+    "CHC": "https://a.espncdn.com/i/teamlogos/mlb/500/chc.png",
+    "HOU": "https://a.espncdn.com/i/teamlogos/mlb/500/hou.png",
+    # Add more logos as needed for each team
+}
+
 player_type = st.selectbox("Choose player type:", ["Batters", "Pitchers"])
 
 if player_type:
@@ -113,11 +123,21 @@ if player_type:
             df_display = df_sorted[["Name", "Team", "Salary (Per Season)", stat]].copy()
             df_display["Salary (Per Season) (Raw)"] = df_sorted["Salary (Per Season)"]
             df_display["Salary (Per Season) (Formatted)"] = df_display["Salary (Per Season) (Raw)"].apply(lambda x: f"${x:,.0f}")
+            df_display["Team (Logo)"] = df_display["Team"].apply(lambda t: f"![logo]({team_logos[t]}) {t}" if t in team_logos else t)
 
             st.subheader(f"📋 Ranked Players by {stat}")
-            st.dataframe(df_display.sort_values(by="Salary (Per Season) (Raw)", ascending=False)[["Name", "Team", "Salary (Per Season) (Formatted)", stat]].rename(columns={"Salary (Per Season) (Formatted)": "Salary (Per Season)"}))
+            st.dataframe(
+                df_display.sort_values(by="Salary (Per Season) (Raw)", ascending=False)[
+                    ["Name", "Team (Logo)", "Salary (Per Season) (Formatted)", stat]
+                ].rename(columns={
+                    "Team (Logo)": "Team",
+                    "Salary (Per Season) (Formatted)": "Salary (Per Season)"
+                }),
+                use_container_width=True
+            )
 else:
     st.info("Please select a player type to begin.")
+
 
 
 

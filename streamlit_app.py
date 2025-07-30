@@ -31,16 +31,6 @@ pitching_stats = {
     "WAR": "Wins Above Replacement – An estimate of the pitcher’s total contribution to the team compared to a replacement-level pitcher"
 }
 
-team_logos = {
-    "ATL": "https://a.espncdn.com/i/teamlogos/mlb/500/atl.png",
-    "BOS": "https://a.espncdn.com/i/teamlogos/mlb/500/bos.png",
-    "NYY": "https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png",
-    "LAD": "https://a.espncdn.com/i/teamlogos/mlb/500/lad.png",
-    "CHC": "https://a.espncdn.com/i/teamlogos/mlb/500/chc.png",
-    "HOU": "https://a.espncdn.com/i/teamlogos/mlb/500/hou.png",
-    # Add more logos as needed for each team
-}
-
 player_type = st.selectbox("Choose player type:", ["Batters", "Pitchers"])
 
 if player_type:
@@ -74,7 +64,6 @@ if player_type:
     mode = st.radio("Would you like to look up a specific player or rank all players?", ["Player Lookup", "Rank All Players"])
 
     if mode == "Player Lookup":
-        df = df[~df["Team"].str.contains("Tms", na=False)]
         teams = sorted(df["Team"].dropna().unique())
         team_selected = st.selectbox("Select Team:", teams)
 
@@ -120,23 +109,16 @@ if player_type:
             df_sorted = df.sort_values(by="Value", ascending=False).reset_index(drop=True)
             df_sorted.index += 1
 
-            df_display = df_sorted[["Name", "Team", "Salary (Per Season)", stat]].copy()
-            df_display["Salary (Per Season) (Raw)"] = df_sorted["Salary (Per Season)"]
-            df_display["Salary (Per Season) (Formatted)"] = df_display["Salary (Per Season) (Raw)"].apply(lambda x: f"${x:,.0f}")
-            df_display["Team (Logo)"] = df_display["Team"].apply(lambda t: f"![logo]({team_logos[t]}) {t}" if t in team_logos else t)
+            df_sorted["Salary (Per Season)"] = df_sorted["Salary (Per Season)"].apply(lambda x: f"${x:,.0f}")
 
             st.subheader(f"📋 Ranked Players by {stat}")
             st.dataframe(
-                df_display.sort_values(by="Salary (Per Season) (Raw)", ascending=False)[
-                    ["Name", "Team (Logo)", "Salary (Per Season) (Formatted)", stat]
-                ].rename(columns={
-                    "Team (Logo)": "Team",
-                    "Salary (Per Season) (Formatted)": "Salary (Per Season)"
-                }),
+                df_sorted[["Name", "Team", "Salary (Per Season)", stat]],
                 use_container_width=True
             )
 else:
     st.info("Please select a player type to begin.")
+
 
 
 

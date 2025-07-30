@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 import numpy as np
+import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="MLB 2025 Value Explorer", layout="centered")
 st.title("⚾ MLB 2025 Value Explorer")
@@ -90,8 +91,16 @@ if player_type:
                     if player_selected in df_sorted["Name"].values:
                         row = df_sorted[df_sorted["Name"] == player_selected].iloc[0]
                         rank = df_sorted[df_sorted["Name"] == player_selected].index[0]
-                        percentile = 100 * (1 - (rank - 1) / len(df_sorted))
-                        st.success(f"📊 {player_selected} is ranked #{rank} in {stat} with a season stat of {row[stat]}. That places them in the top {percentile:.1f}% of the league.")
+                        percentile = round((1 - rank / len(df_sorted)) * 100, 1)
+                        st.success(f"📊 {player_selected} is ranked #{rank} in {stat} with a season stat of {row[stat]}. That's the {percentile}th percentile in MLB.")
+
+                        fig, ax = plt.subplots()
+                        ax.hist(df_sorted["Value"], bins=30, alpha=0.7, color='skyblue')
+                        ax.axvline(row["Value"], color='red', linestyle='dashed', linewidth=2)
+                        ax.set_title("Distribution of Value Scores")
+                        ax.set_xlabel("Value")
+                        ax.set_ylabel("Number of Players")
+                        st.pyplot(fig)
                     else:
                         st.warning("This player does not meet the qualification threshold.")
 
@@ -119,6 +128,7 @@ if player_type:
             st.dataframe(df_display.sort_values(by="Salary (Per Season) (Raw)", ascending=False)[["Name", "Team", "Salary (Per Season) (Formatted)", stat]].rename(columns={"Salary (Per Season) (Formatted)": "Salary (Per Season)"}))
 else:
     st.info("Please select a player type to begin.")
+
 
 
 

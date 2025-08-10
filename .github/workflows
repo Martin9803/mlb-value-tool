@@ -1,1 +1,37 @@
+name: Update MLB data (FanGraphs)
 
+on:
+  schedule:
+    # Runs every day at 09:15 UTC (5:15am ET)
+    - cron: "15 9 * * *"
+  workflow_dispatch: {}   # lets you run it on-demand from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Install R packages
+        run: |
+          Rscript -e 'install.packages(c("readr","dplyr","stringr","httr"), repos="https://cloud.r-project.org")'
+
+      - name: Run updater
+        run: Rscript scripts/update_data.R
+
+      - name: Commit & push refreshed CSVs
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(data): refresh FanGraphs 2025 season-to-date"
+          branch: main
